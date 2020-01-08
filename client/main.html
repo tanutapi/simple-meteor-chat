@@ -1,0 +1,19 @@
+<head>
+  <title>a simple meteor chat</title>
+</head>
+
+<body>
+  {{>test}}
+</body>
+
+<template name="test">
+  <h1>A simple meteor chat</h1>
+  {{#unless currentUser}}
+    <form>
+      <input type="text" placeholder="username">
+      <input type="password">
+      <input type="submit" value="Login">
+    </form>
+  {{else}}
+  {{/unless}}
+</template>
