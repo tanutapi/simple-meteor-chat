@@ -3,17 +3,72 @@
 </head>
 
 <body>
-  {{>test}}
-</body>
-
-<template name="test">
   <h1>A simple meteor chat</h1>
   {{#unless currentUser}}
-    <form>
-      <input type="text" placeholder="username">
-      <input type="password">
-      <input type="submit" value="Login">
-    </form>
+    {{>login}}
   {{else}}
+    {{>chat}}
   {{/unless}}
+</body>
+
+<template name="login">
+  <form class="form">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="username" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" class="form-control">
+    </div>
+    <div class="txtError" style="color: red;"></div>
+    <input class="btn btn-default" type="submit" value="Login">
+  </form>
+</template>
+
+<template name="chat">
+  <h3>
+    Welcome {{currentUser.profile.name}} {{currentUser.profile.surname}}! (<a href="#" class="btnLogout">Logout</a>)
+  </h3>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="jumbotron">
+        <div class="container">
+          <p>Chat Box</p>
+          <hr>
+          {{#each message in messages}}
+            <p>
+              {{#let sender = (user message.from)}}
+                <strong>
+                  {{sender.username}} - {{sender.profile.name}} {{sender.profile.surname}}:
+                </strong>
+              {{/let}}
+              {{message.msg}}
+            </p>
+          {{else}}
+            <p style="color: grey;">
+              No chat message... Please send one.
+            </p>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="input-group">
+        <input type="text" class="txtMessage form-control" placeholder="Your chat message...">
+        <span class="input-group-btn">
+          <button class="btnSend btn btn-primary" type="button">Send</button>
+        </span>
+      </div>
+
+      <p>
+        <a href="#" class="btnClearAll">Clear all chat message</a>
+      </p>
+    </div>
+  </div>
+  
 </template>

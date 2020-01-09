@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { Messages } from '../imports/collections';
 
 Meteor.publish('messages', function() {
   return Messages.find({}, {sort: { createdAt: 1 }});
@@ -15,7 +16,7 @@ Meteor.publish(null, function() {
 });
 
 Meteor.methods({
-  'sendMessages'(msg) {
+  'sendMessage'(msg) {
     check(msg, String);
     if (!this.userId) {
       throw new Meteor.Error(401, 'Unauthorized');
@@ -26,6 +27,12 @@ Meteor.methods({
       createdAt: new Date(),
     });
   },
+  'clearAllMessages'() {
+    if (!this.userId) {
+      throw new Meteor.Error(401, 'Unauthorized');
+    }
+    Messages.remove({});
+  }
 });
 
 try {
