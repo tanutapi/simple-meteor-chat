@@ -3,16 +3,22 @@ import { Accounts } from 'meteor/accounts-base';
 import { Messages } from '../imports/collections';
 
 Meteor.publish('messages', function() {
-  return Messages.find({}, {sort: { createdAt: 1 }});
+  if (this.userId) {
+    return Messages.find({}, {sort: { createdAt: 1 }});
+  }
+  return [];
 });
 
 Meteor.publish(null, function() {
-  return Meteor.users.find({}, {
-    fields: {
-      username: 1,
-      profile: 1,
-    },
-  });
+  if (this.userId) {
+    return Meteor.users.find({}, {
+      fields: {
+        username: 1,
+        profile: 1,
+      },
+    });
+  }
+  return [];
 });
 
 Meteor.methods({
