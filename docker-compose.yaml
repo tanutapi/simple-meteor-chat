@@ -1,0 +1,14 @@
+version: "3"
+services:
+  mongo:
+    image: mongo
+    expose: 
+      - 27017
+  webapp:
+    build: .
+    ports: 
+      - 80:80
+    environment: 
+      MONGO_URL: mongodb://mongo:27017/simplechat
+      ROOT_URL: http://localhost
+
