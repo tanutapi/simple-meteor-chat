@@ -8,6 +8,8 @@ services:
     build: .
     ports: 
       - 3000:80
+    depends_on:
+      - mongo
     environment: 
       MONGO_URL: mongodb://mongo:27017/simplechat
       ROOT_URL: http://localhost:3000
