@@ -38,7 +38,13 @@ Meteor.methods({
       throw new Meteor.Error(401, 'Unauthorized');
     }
     Messages.remove({});
-  }
+  },
+  'methodThatThrowErrorAsString'() {
+    throw new Meteor.Error('error', 'This is an error');
+  },
+  'methodThatThrowErrorAsInt'() {
+    throw new Meteor.Error(500, 'This is an error');
+  },
 });
 
 try {
