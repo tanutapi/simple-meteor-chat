@@ -8,6 +8,7 @@
     {{>login}}
   {{else}}
     {{>chat}}
+    {{>asset}}
   {{/unless}}
 </body>
 
@@ -70,5 +71,26 @@
       </p>
     </div>
   </div>
-  
+</template>
+
+<template name="asset">
+  <h3>Assets</h3>
+  <div class="form-inline">
+    <div class="form-group">
+      <label>Asset of:</label>
+      <select class="form-control custom-select">
+        <option value="">-</option>
+        {{#each user in users}}
+          <option value={{user.username}}>{{user.username}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+  <ol>
+    {{#each asset in assets}}
+      <li>{{asset.properties}}</li>
+    {{else}}
+      No property found
+    {{/each}}
+  </ol>
 </template>

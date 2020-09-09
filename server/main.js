@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Messages } from '../imports/collections';
+import { Messages, Assets } from '../imports/collections';
 
 Meteor.publish('messages', function() {
   if (this.userId) {
     return Messages.find({}, {sort: { createdAt: 1 }});
   }
-  return [];
+  this.ready();
 });
 
 Meteor.publish(null, function() {
@@ -18,7 +18,14 @@ Meteor.publish(null, function() {
       },
     });
   }
-  return [];
+  this.ready();
+});
+
+Meteor.publish('assets', function(username) {
+  if (this.userId) {
+    return Assets.find({owner: username});
+  }
+  this.ready();
 });
 
 Meteor.methods({
@@ -68,3 +75,13 @@ try {
     },
   });
 } catch (err) {}
+
+Assets.remove({});
+Assets.insert({
+  owner: 'user1',
+  properties: [0, 1, 2],
+});
+Assets.insert({
+  owner: 'user2',
+  properties: [3, 4, 5],
+});

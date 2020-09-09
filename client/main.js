@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Messages } from '../imports/collections';
+import { Messages, Assets } from '../imports/collections';
 
 import './main.html';
 
@@ -57,4 +57,27 @@ Template.chat.events({
 
 Template.chat.onCreated(function() {
   this.subscribe('messages');
+});
+
+Template.asset.helpers({
+  users() {
+    return Meteor.users.find();
+  },
+  assets() {
+    return Assets.find();
+  },
+});
+
+Template.asset.events({
+  'change select'(event, template) {
+    template.rvAssetOf.set(event.currentTarget.value);
+  }
+});
+
+Template.asset.onCreated(function() {
+  this.rvAssetOf = new ReactiveVar();
+
+  this.autorun(() => {
+    this.subscribe('assets', this.rvAssetOf.get());
+  });
 });
