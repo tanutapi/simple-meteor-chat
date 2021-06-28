@@ -52,6 +52,20 @@ Meteor.methods({
   'methodThatThrowErrorAsInt'() {
     throw new Meteor.Error(500, 'This is an error');
   },
+  'methodThatReturnNumber'() {
+    return 123.456;
+  },
+  'methodThatReturnString'() {
+    return 'hello world';
+  },
+  'methodThatReturnDateTime'() {
+    return new Date();
+  },
+  'methodThatReturnObject'() {
+    return {
+      createdAt: new Date(),
+    };
+  },
 });
 
 try {
