@@ -66,6 +66,58 @@ Meteor.methods({
       createdAt: new Date(),
     };
   },
+  'methodThatReturnNestedDateObject'() {
+    return {
+      a: {
+        createdAt: new Date(),
+        b: {
+          c: {
+            createdAt: new Date(),
+          }
+        }
+      },
+      createdAt: new Date(),
+    };
+  },
+  'methodThatReturnArrayOfNestedDateObject'() {
+    var date1 = new Date();
+    var date2 = new Date(date1 - 1000);
+    var date3 = new Date(date1 - 2000);
+    var date4 = new Date(date1 - 3000);
+    var date5 = new Date(date1 - 4000);
+    var date6 = new Date(date1 - 5000);
+    return [{
+      a: {
+        createdAt: date1,
+        b: {
+          c: [{
+            createdAt: date2,
+          }, {
+            createdAt: date3,
+          }, {
+            createdAt: date4,
+          }],
+          d: [date5, date6],
+        }
+      },
+      createdAt: [date5, date6],
+    }, {
+      a: {
+        createdAt: date1,
+        b: {
+          c: [{
+            createdAt: date2,
+          }, {
+            createdAt: date3,
+          }, {
+            createdAt: date4,
+          }],
+          d: [date5, date6],
+        }
+      },
+      createdAt: [date5, date6],
+    }];
+  },
 });
 
 try {
