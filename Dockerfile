@@ -1,1 +1,1 @@
-FROM abernix/meteord:node-12-onbuild
+FROM zodern/meteor:latest
