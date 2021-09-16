@@ -1,1 +1,1 @@
-FROM zodern/meteor:latest
+FROM abernix/meteord:node-8.16.1-onbuild
