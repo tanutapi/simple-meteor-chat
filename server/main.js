@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Messages, Assets } from '../imports/collections';
+import moment from 'moment';
 
 Meteor.publish('messages', function() {
   if (this.userId) {
@@ -117,6 +118,20 @@ Meteor.methods({
       },
       createdAt: [date5, date6],
     }];
+  },
+  'methodThatReturnTheNextDay'(date) {
+    const next = moment(date).add(1, 'day');
+    return {
+      input: date,
+      output: next.toDate(),
+    };
+  },
+  'methodThatAcceptObjectOfDate'(object) {
+    const tmp = Object.values(object).filter(x => x instanceof Date);
+    if (tmp.length > 0) {
+      return object;
+    }
+    return null;
   },
 });
 
