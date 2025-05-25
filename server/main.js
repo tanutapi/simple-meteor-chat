@@ -30,6 +30,9 @@ Meteor.publish('assets', function(username) {
 });
 
 Meteor.methods({
+  'helloMethod'() {
+    return `Hey ${this.userId}, how are you?`;
+  },
   'sendMessage'(msg) {
     check(msg, String);
     if (!this.userId) {
