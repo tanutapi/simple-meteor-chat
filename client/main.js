@@ -3,6 +3,8 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Messages, Assets } from '../imports/collections';
 
+import 'bootstrap/dist/css/bootstrap.css';
+
 import './main.html';
 
 Template.login.helpers({
