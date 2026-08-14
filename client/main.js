@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import moment from 'moment';
 import { Messages, Assets } from '../imports/collections';
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -17,8 +19,10 @@ Template.login.events({
     const username = template.$('#username').val();
     const password = template.$('#password').val();
     Meteor.loginWithPassword(username, password, (err) => {
-      console.log(err);
-      template.$('.txtError').html(err.message);
+      if (err) {
+        console.log(err);
+        template.$('.txtError').text(err.reason || err.message).removeClass('d-none');
+      }
     });
   },
 });
@@ -26,6 +30,16 @@ Template.login.events({
 Template.login.onCreated(function() {
 
 });
+
+function sendMessage(template) {
+  const msg = template.$('.txtMessage').val();
+  if (!msg || !msg.trim()) {
+    return;
+  }
+  Meteor.call('sendMessage', msg, (err, res) => {
+    template.$('.txtMessage').val('').trigger('focus');
+  });
+}
 
 Template.chat.helpers({
   user(idUser) {
@@ -37,7 +51,16 @@ Template.chat.helpers({
         createdAt: 1,
       },
     });
-  }
+  },
+  isOwn(message) {
+    return message.from === Meteor.userId();
+  },
+  initial(sender) {
+    return sender && sender.username ? sender.username.charAt(0).toUpperCase() : '?';
+  },
+  formatTime(date) {
+    return date ? moment(date).format('HH:mm') : '';
+  },
 });
 
 Template.chat.events({
@@ -45,10 +68,13 @@ Template.chat.events({
     Meteor.logout();
   },
   'click .btnSend'(event, template) {
-    const msg = template.$('.txtMessage').val();
-    Meteor.call('sendMessage', msg, (err, res) => {
-      template.$('.txtMessage').val('');
-    });
+    sendMessage(template);
+  },
+  'keydown .txtMessage'(event, template) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      sendMessage(template);
+    }
   },
   'click .btnClearAll'() {
     if (confirm('Do you want to delete all chat message?')) {
@@ -59,6 +85,18 @@ Template.chat.events({
 
 Template.chat.onCreated(function() {
   this.subscribe('messages');
+});
+
+Template.chat.onRendered(function() {
+  this.autorun(() => {
+    Messages.find().count();
+    Tracker.afterFlush(() => {
+      const el = this.find('.chat-messages');
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
+    });
+  });
 });
 
 Template.asset.helpers({

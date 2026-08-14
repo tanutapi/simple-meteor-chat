@@ -1,4 +1,221 @@
+:root {
+  --brand-1: #6366f1;
+  --brand-2: #8b5cf6;
+  --brand-gradient: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  --surface-muted: #f6f7fb;
+  --ink-muted: #94a3b8;
+}
+
 body {
-  padding: 10px;
-  font-family: sans-serif;
+  min-height: 100vh;
+  background:
+    radial-gradient(1100px 600px at 15% -10%, rgba(99, 102, 241, 0.35), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(139, 92, 246, 0.3), transparent 55%),
+    #eef0f6;
+  background-attachment: fixed;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 720px;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+/* ---------- Brand ---------- */
+
+.brand-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--brand-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+}
+
+.brand-badge-sm {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  box-shadow: none;
+}
+
+.btn-brand {
+  background: var(--brand-gradient);
+  border: 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-brand:hover,
+.btn-brand:focus,
+.btn-brand:active {
+  color: #fff;
+  filter: brightness(1.07);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-1);
+  box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.15);
+}
+
+/* ---------- Login ---------- */
+
+.login-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 4rem);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ---------- Chat ---------- */
+
+.chat-header {
+  background: var(--brand-gradient);
+  color: #fff;
+}
+
+.chat-header-sub {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.chat-header .btn-outline-light {
+  --bs-btn-border-color: rgba(255, 255, 255, 0.5);
+}
+
+.chat-messages {
+  height: min(52vh, 460px);
+  overflow-y: auto;
+  background: var(--surface-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 999px;
+}
+
+.msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  max-width: 82%;
+  align-self: flex-start;
+}
+
+.msg-row.msg-own {
+  align-self: flex-end;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.35);
+}
+
+.msg-bubble {
+  background: #fff;
+  border-radius: 1rem;
+  border-bottom-left-radius: 0.3rem;
+  padding: 0.5rem 0.85rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.msg-own .msg-bubble {
+  background: var(--brand-gradient);
+  color: #fff;
+  border-radius: 1rem;
+  border-bottom-right-radius: 0.3rem;
+}
+
+.msg-sender {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--brand-1);
+  margin-bottom: 0.1rem;
+}
+
+.msg-text {
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.msg-time {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  text-align: right;
+  margin-top: 0.15rem;
+}
+
+.msg-own .msg-time {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.chat-empty {
+  margin: auto;
+}
+
+.chat-empty-icon {
+  font-size: 2.2rem;
+  opacity: 0.6;
+}
+
+.chat-composer {
+  background: #fff;
+  border-top: 1px solid #eef0f4;
+}
+
+.chat-composer .txtMessage {
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+  padding-left: 1.1rem;
+}
+
+.chat-composer .btnSend {
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+}
+
+/* ---------- Assets ---------- */
+
+.asset-badge {
+  background: #eef2ff;
+  color: #4338ca;
+  font-weight: 600;
 }
