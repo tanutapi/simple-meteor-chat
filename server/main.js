@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
+import { check } from 'meteor/check';
 import { Messages, Assets } from '../imports/collections';
 import moment from 'moment';
 
@@ -33,22 +34,22 @@ Meteor.methods({
   'helloMethod'() {
     return `Hey ${this.userId}, how are you?`;
   },
-  'sendMessage'(msg) {
+  async 'sendMessage'(msg) {
     check(msg, String);
     if (!this.userId) {
       throw new Meteor.Error(401, 'Unauthorized');
     }
-    Messages.insert({
+    await Messages.insertAsync({
       from: this.userId,
       msg: msg,
       createdAt: new Date(),
     });
   },
-  'clearAllMessages'() {
+  async 'clearAllMessages'() {
     if (!this.userId) {
       throw new Meteor.Error(401, 'Unauthorized');
     }
-    Messages.remove({});
+    await Messages.removeAsync({});
   },
   'methodThatThrowErrorAsString'() {
     throw new Meteor.Error('error', 'This is an error');
@@ -138,34 +139,36 @@ Meteor.methods({
   },
 });
 
-try {
-  Accounts.createUser({
-    username: 'user1',
-    password: 'password1',
-    profile: {
-      name: 'Apple',
-      surname: 'Seed',
-    },
-  });
-} catch (err) {}
+Meteor.startup(async () => {
+  try {
+    await Accounts.createUserAsync({
+      username: 'user1',
+      password: 'password1',
+      profile: {
+        name: 'Apple',
+        surname: 'Seed',
+      },
+    });
+  } catch (err) {}
 
-try {
-  Accounts.createUser({
-    username: 'user2',
-    password: 'password2',
-    profile: {
-      name: 'John',
-      surname: 'Doe',
-    },
-  });
-} catch (err) {}
+  try {
+    await Accounts.createUserAsync({
+      username: 'user2',
+      password: 'password2',
+      profile: {
+        name: 'John',
+        surname: 'Doe',
+      },
+    });
+  } catch (err) {}
 
-Assets.remove({});
-Assets.insert({
-  owner: 'user1',
-  properties: [0, 1, 2],
-});
-Assets.insert({
-  owner: 'user2',
-  properties: [3, 4, 5],
+  await Assets.removeAsync({});
+  await Assets.insertAsync({
+    owner: 'user1',
+    properties: [0, 1, 2],
+  });
+  await Assets.insertAsync({
+    owner: 'user2',
+    properties: [3, 4, 5],
+  });
 });
