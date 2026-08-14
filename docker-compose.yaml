@@ -6,8 +6,8 @@ services:
       - 27017
   webapp:
     build: .
-    ports: 
-      - 3000:80
+    ports:
+      - 3000:3000
     depends_on:
       - mongo
     environment: 
