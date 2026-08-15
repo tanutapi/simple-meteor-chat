@@ -1,96 +1,137 @@
 <head>
-  <title>a simple meteor chat</title>
+  <title>Simple Meteor Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-  <h1>A simple meteor chat</h1>
-  {{#unless currentUser}}
-    {{>login}}
-  {{else}}
-    {{>chat}}
-    {{>asset}}
-  {{/unless}}
+  <div class="app-shell">
+    <div class="app-container">
+      {{#unless currentUser}}
+        {{>login}}
+      {{else}}
+        {{>chat}}
+        {{>asset}}
+      {{/unless}}
+    </div>
+  </div>
 </body>
 
 <template name="login">
-  <form class="form">
-    <div class="form-group">
-      <label>Username</label>
-      <input type="text" id="username" class="form-control">
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="password" class="form-control">
-    </div>
-    <div class="txtError" style="color: red;"></div>
-    <input class="btn btn-default" type="submit" value="Login">
-  </form>
-</template>
-
-<template name="chat">
-  <h3>
-    Welcome {{currentUser.profile.name}} {{currentUser.profile.surname}}! (<a href="#" class="btnLogout">Logout</a>)
-  </h3>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="jumbotron">
-        <div class="container">
-          <p>Chat Box</p>
-          <hr>
-          {{#each message in messages}}
-            <p>
-              {{#let sender = (user message.from)}}
-                <strong>
-                  {{sender.username}} - {{sender.profile.name}} {{sender.profile.surname}}:
-                </strong>
-              {{/let}}
-              {{message.msg}}
-            </p>
-          {{else}}
-            <p style="color: grey;">
-              No chat message... Please send one.
-            </p>
-          {{/each}}
+  <div class="login-wrap">
+    <div class="card login-card border-0 shadow-lg rounded-4">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="brand-badge mx-auto mb-3">💬</div>
+          <h1 class="h4 fw-bold mb-1">Simple Meteor Chat</h1>
+          <p class="text-secondary small mb-0">Sign in to join the conversation</p>
         </div>
+        <form class="form">
+          <div class="form-floating mb-3">
+            <input type="text" id="username" class="form-control" placeholder="Username" autocomplete="username">
+            <label for="username">Username</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" id="password" class="form-control" placeholder="Password" autocomplete="current-password">
+            <label for="password">Password</label>
+          </div>
+          <div class="txtError alert alert-danger py-2 small d-none" role="alert"></div>
+          <button class="btn btn-brand w-100 py-2" type="submit">Sign in</button>
+        </form>
+        <p class="text-secondary text-center small mt-4 mb-0">
+          Try <code>user1 / password1</code> or <code>user2 / password2</code>
+        </p>
       </div>
     </div>
   </div>
-  
-  <div class="row">
-    <div class="col-md-12">
-      <div class="input-group">
-        <input type="text" class="txtMessage form-control" placeholder="Your chat message...">
-        <span class="input-group-btn">
-          <button class="btnSend btn btn-primary" type="button">Send</button>
-        </span>
-      </div>
+</template>
 
-      <p>
-        <a href="#" class="btnClearAll">Clear all chat message</a>
-      </p>
+<template name="chat">
+  <div class="card chat-card border-0 shadow-lg rounded-4 overflow-hidden">
+    <div class="chat-header d-flex align-items-center gap-3 px-4 py-3">
+      <div class="brand-badge brand-badge-sm">💬</div>
+      <div class="flex-grow-1 min-w-0">
+        <div class="fw-bold text-truncate">Simple Meteor Chat</div>
+        <div class="small chat-header-sub text-truncate">
+          Signed in as {{currentUser.profile.name}} {{currentUser.profile.surname}}
+        </div>
+      </div>
+      <span class="purge-pill {{#if purgeUrgent}}purge-pill-urgent{{/if}}"
+            title="Chat history is cleared automatically every minute">
+        ⏳ {{purgeCountdown}}
+      </span>
+      <button class="btnClearAll btn btn-outline-light btn-sm" type="button" title="Delete all chat messages">
+        Clear
+      </button>
+      <button class="btnLogout btn btn-light btn-sm" type="button">Logout</button>
+    </div>
+
+    <div class="chat-messages px-4 py-3">
+      {{#each message in messages}}
+        {{#if message.system}}
+          <div class="msg-system">
+            <span class="msg-system-pill" title="{{formatTime message.createdAt}}">
+              📢 {{message.msg}}
+            </span>
+          </div>
+        {{else}}
+          {{#let sender=(user message.from)}}
+            <div class="msg-row {{#if isOwn message}}msg-own{{/if}}">
+              {{#unless isOwn message}}
+                <div class="avatar" title="{{sender.username}}">{{initial sender}}</div>
+              {{/unless}}
+              <div class="msg-bubble">
+                {{#unless isOwn message}}
+                  <div class="msg-sender">{{sender.profile.name}} {{sender.profile.surname}}</div>
+                {{/unless}}
+                <div class="msg-text">{{message.msg}}</div>
+                <div class="msg-time">{{formatTime message.createdAt}}</div>
+              </div>
+            </div>
+          {{/let}}
+        {{/if}}
+      {{else}}
+        <div class="chat-empty text-center text-secondary">
+          <div class="chat-empty-icon mb-2">🗨️</div>
+          <p class="mb-0 small">No messages yet — say hello!</p>
+        </div>
+      {{/each}}
+    </div>
+
+    <div class="chat-composer px-4 py-3">
+      <div class="input-group">
+        <input type="text" class="txtMessage form-control" placeholder="Type a message…" autocomplete="off">
+        <button class="btnSend btn btn-brand px-4" type="button">Send</button>
+      </div>
     </div>
   </div>
 </template>
 
 <template name="asset">
-  <h3>Assets</h3>
-  <div class="form-inline">
-    <div class="form-group">
-      <label>Asset of:</label>
-      <select class="form-control custom-select">
-        <option value="">-</option>
-        {{#each user in users}}
-          <option value={{user.username}}>{{user.username}}</option>
+  <div class="card asset-card border-0 shadow rounded-4 mt-4">
+    <div class="card-body p-4">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+        <h2 class="h6 fw-bold mb-0">Assets</h2>
+        <select class="form-select form-select-sm w-auto">
+          <option value="">—</option>
+          {{#each user in users}}
+            <option value={{user.username}}>{{user.username}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <ul class="list-group list-group-flush asset-list">
+        {{#each asset in assets}}
+          <li class="list-group-item px-0 d-flex align-items-center justify-content-between">
+            <span class="fw-medium">{{asset.owner}}</span>
+            <span>
+              {{#each property in asset.properties}}
+                <span class="badge asset-badge ms-1">{{property}}</span>
+              {{/each}}
+            </span>
+          </li>
+        {{else}}
+          <li class="list-group-item px-0 text-secondary small">No property found</li>
         {{/each}}
-      </select>
+      </ul>
     </div>
   </div>
-  <ol>
-    {{#each asset in assets}}
-      <li>{{asset.properties}}</li>
-    {{else}}
-      No property found
-    {{/each}}
-  </ol>
 </template>

@@ -1,7 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Messages, Assets } from '../imports/collections';
+import { check } from 'meteor/check';
+import { Messages, Assets, Status } from '../imports/collections';
 import moment from 'moment';
+
+const PURGE_INTERVAL_MS = 60 * 1000;
+const BROADCAST_INTERVAL_MS = 10 * 1000;
+
+const BROADCAST_SENTENCES = [
+  'Welcome to Simple Meteor Chat!',
+  'Messages vanish every minute — enjoy the moment.',
+  'Be kind to each other out there.',
+  'Did you know? This app runs on Meteor 3.',
+  'Say something nice before the board resets.',
+  'Reactivity is magic, but this message is scheduled.',
+  'Tick tock — the purge timer is always running.',
+  'A fresh start is never more than a minute away.',
+  'Hello from the server side!',
+  'Stay hydrated and keep chatting.',
+];
 
 Meteor.publish('messages', function() {
   if (this.userId) {
@@ -29,26 +46,33 @@ Meteor.publish('assets', function(username) {
   this.ready();
 });
 
+Meteor.publish('status', function() {
+  if (this.userId) {
+    return Status.find({_id: 'chatPurge'});
+  }
+  this.ready();
+});
+
 Meteor.methods({
   'helloMethod'() {
     return `Hey ${this.userId}, how are you?`;
   },
-  'sendMessage'(msg) {
+  async 'sendMessage'(msg) {
     check(msg, String);
     if (!this.userId) {
       throw new Meteor.Error(401, 'Unauthorized');
     }
-    Messages.insert({
+    await Messages.insertAsync({
       from: this.userId,
       msg: msg,
       createdAt: new Date(),
     });
   },
-  'clearAllMessages'() {
+  async 'clearAllMessages'() {
     if (!this.userId) {
       throw new Meteor.Error(401, 'Unauthorized');
     }
-    Messages.remove({});
+    await Messages.removeAsync({});
   },
   'methodThatThrowErrorAsString'() {
     throw new Meteor.Error('error', 'This is an error');
@@ -138,34 +162,59 @@ Meteor.methods({
   },
 });
 
-try {
-  Accounts.createUser({
-    username: 'user1',
-    password: 'password1',
-    profile: {
-      name: 'Apple',
-      surname: 'Seed',
-    },
-  });
-} catch (err) {}
+Meteor.startup(async () => {
+  try {
+    await Accounts.createUserAsync({
+      username: 'user1',
+      password: 'password1',
+      profile: {
+        name: 'Apple',
+        surname: 'Seed',
+      },
+    });
+  } catch (err) {}
 
-try {
-  Accounts.createUser({
-    username: 'user2',
-    password: 'password2',
-    profile: {
-      name: 'John',
-      surname: 'Doe',
-    },
-  });
-} catch (err) {}
+  try {
+    await Accounts.createUserAsync({
+      username: 'user2',
+      password: 'password2',
+      profile: {
+        name: 'John',
+        surname: 'Doe',
+      },
+    });
+  } catch (err) {}
 
-Assets.remove({});
-Assets.insert({
-  owner: 'user1',
-  properties: [0, 1, 2],
-});
-Assets.insert({
-  owner: 'user2',
-  properties: [3, 4, 5],
+  await Assets.removeAsync({});
+  await Assets.insertAsync({
+    owner: 'user1',
+    properties: [0, 1, 2],
+  });
+  await Assets.insertAsync({
+    owner: 'user2',
+    properties: [3, 4, 5],
+  });
+
+  // Clear the chat history every minute and publish the next purge time
+  // so clients can show a countdown.
+  await Status.upsertAsync({_id: 'chatPurge'}, {
+    $set: {nextPurgeAt: new Date(Date.now() + PURGE_INTERVAL_MS)},
+  });
+  Meteor.setInterval(async () => {
+    await Messages.removeAsync({});
+    await Status.upsertAsync({_id: 'chatPurge'}, {
+      $set: {nextPurgeAt: new Date(Date.now() + PURGE_INTERVAL_MS)},
+    });
+  }, PURGE_INTERVAL_MS);
+
+  // Broadcast a system message every 10 seconds.
+  Meteor.setInterval(async () => {
+    const sentence = BROADCAST_SENTENCES[Math.floor(Math.random() * BROADCAST_SENTENCES.length)];
+    await Messages.insertAsync({
+      from: null,
+      system: true,
+      msg: sentence,
+      createdAt: new Date(),
+    });
+  }, BROADCAST_INTERVAL_MS);
 });
