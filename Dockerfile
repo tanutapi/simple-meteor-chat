@@ -11,8 +11,10 @@ FROM node:24-slim AS build
 # Docker build steps run as root
 ENV METEOR_ALLOW_SUPERUSER=true
 
-# Install the Meteor CLI matching .meteor/release
+# Install the Meteor CLI matching .meteor/release.
+# The installer places the launcher in ~/.meteor, which is not on PATH.
 RUN npm install -g meteor@3.5.1
+ENV PATH="/root/.meteor:${PATH}"
 
 WORKDIR /source
 
