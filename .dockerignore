@@ -1,0 +1,6 @@
+.git
+node_modules
+.meteor/local
+output
+Dockerfile
+docker-compose.yaml
