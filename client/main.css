@@ -103,6 +103,29 @@ body {
   --bs-btn-border-color: rgba(255, 255, 255, 0.5);
 }
 
+.purge-pill {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.purge-pill-urgent {
+  background: rgba(220, 53, 69, 0.85);
+  border-color: rgba(255, 255, 255, 0.5);
+  animation: purge-pulse 1s ease-in-out infinite;
+}
+
+@keyframes purge-pulse {
+  50% {
+    opacity: 0.6;
+  }
+}
+
 .chat-messages {
   height: min(52vh, 460px);
   overflow-y: auto;

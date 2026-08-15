@@ -1,8 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
-import { Messages, Assets } from '../imports/collections';
+import { Messages, Assets, Status } from '../imports/collections';
 import moment from 'moment';
+
+const PURGE_INTERVAL_MS = 60 * 1000;
 
 Meteor.publish('messages', function() {
   if (this.userId) {
@@ -26,6 +28,13 @@ Meteor.publish(null, function() {
 Meteor.publish('assets', function(username) {
   if (this.userId) {
     return Assets.find({owner: username});
+  }
+  this.ready();
+});
+
+Meteor.publish('status', function() {
+  if (this.userId) {
+    return Status.find({_id: 'chatPurge'});
   }
   this.ready();
 });
@@ -171,4 +180,16 @@ Meteor.startup(async () => {
     owner: 'user2',
     properties: [3, 4, 5],
   });
+
+  // Clear the chat history every minute and publish the next purge time
+  // so clients can show a countdown.
+  await Status.upsertAsync({_id: 'chatPurge'}, {
+    $set: {nextPurgeAt: new Date(Date.now() + PURGE_INTERVAL_MS)},
+  });
+  Meteor.setInterval(async () => {
+    await Messages.removeAsync({});
+    await Status.upsertAsync({_id: 'chatPurge'}, {
+      $set: {nextPurgeAt: new Date(Date.now() + PURGE_INTERVAL_MS)},
+    });
+  }, PURGE_INTERVAL_MS);
 });

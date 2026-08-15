@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
-import { Messages, Assets } from '../imports/collections';
+import { Messages, Assets, Status } from '../imports/collections';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -30,6 +30,15 @@ Template.login.events({
 Template.login.onCreated(function() {
 
 });
+
+function purgeSecondsLeft(template) {
+  const status = Status.findOne('chatPurge');
+  if (!status || !status.nextPurgeAt) {
+    return null;
+  }
+  const now = template.rvNow.get();
+  return Math.max(0, Math.ceil((status.nextPurgeAt.getTime() - now) / 1000));
+}
 
 function sendMessage(template) {
   const msg = template.$('.txtMessage').val();
@@ -61,6 +70,19 @@ Template.chat.helpers({
   formatTime(date) {
     return date ? moment(date).format('HH:mm') : '';
   },
+  purgeCountdown() {
+    const seconds = purgeSecondsLeft(Template.instance());
+    if (seconds === null) {
+      return '-:--';
+    }
+    const mm = Math.floor(seconds / 60);
+    const ss = String(seconds % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+  },
+  purgeUrgent() {
+    const seconds = purgeSecondsLeft(Template.instance());
+    return seconds !== null && seconds <= 10;
+  },
 });
 
 Template.chat.events({
@@ -85,6 +107,15 @@ Template.chat.events({
 
 Template.chat.onCreated(function() {
   this.subscribe('messages');
+  this.subscribe('status');
+  this.rvNow = new ReactiveVar(Date.now());
+  this.hClock = Meteor.setInterval(() => {
+    this.rvNow.set(Date.now());
+  }, 1000);
+});
+
+Template.chat.onDestroyed(function() {
+  Meteor.clearInterval(this.hClock);
 });
 
 Template.chat.onRendered(function() {

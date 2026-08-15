@@ -55,6 +55,10 @@
           Signed in as {{currentUser.profile.name}} {{currentUser.profile.surname}}
         </div>
       </div>
+      <span class="purge-pill {{#if purgeUrgent}}purge-pill-urgent{{/if}}"
+            title="Chat history is cleared automatically every minute">
+        ⏳ {{purgeCountdown}}
+      </span>
       <button class="btnClearAll btn btn-outline-light btn-sm" type="button" title="Delete all chat messages">
         Clear
       </button>

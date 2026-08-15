@@ -4,3 +4,5 @@ import { Meteor } from 'meteor/meteor';
 export const Messages = new Mongo.Collection('messages');
 
 export const Assets = new Mongo.Collection('assets');
+
+export const Status = new Mongo.Collection('status');
