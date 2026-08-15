@@ -67,20 +67,28 @@
 
     <div class="chat-messages px-4 py-3">
       {{#each message in messages}}
-        {{#let sender=(user message.from)}}
-          <div class="msg-row {{#if isOwn message}}msg-own{{/if}}">
-            {{#unless isOwn message}}
-              <div class="avatar" title="{{sender.username}}">{{initial sender}}</div>
-            {{/unless}}
-            <div class="msg-bubble">
-              {{#unless isOwn message}}
-                <div class="msg-sender">{{sender.profile.name}} {{sender.profile.surname}}</div>
-              {{/unless}}
-              <div class="msg-text">{{message.msg}}</div>
-              <div class="msg-time">{{formatTime message.createdAt}}</div>
-            </div>
+        {{#if message.system}}
+          <div class="msg-system">
+            <span class="msg-system-pill" title="{{formatTime message.createdAt}}">
+              📢 {{message.msg}}
+            </span>
           </div>
-        {{/let}}
+        {{else}}
+          {{#let sender=(user message.from)}}
+            <div class="msg-row {{#if isOwn message}}msg-own{{/if}}">
+              {{#unless isOwn message}}
+                <div class="avatar" title="{{sender.username}}">{{initial sender}}</div>
+              {{/unless}}
+              <div class="msg-bubble">
+                {{#unless isOwn message}}
+                  <div class="msg-sender">{{sender.profile.name}} {{sender.profile.surname}}</div>
+                {{/unless}}
+                <div class="msg-text">{{message.msg}}</div>
+                <div class="msg-time">{{formatTime message.createdAt}}</div>
+              </div>
+            </div>
+          {{/let}}
+        {{/if}}
       {{else}}
         <div class="chat-empty text-center text-secondary">
           <div class="chat-empty-icon mb-2">🗨️</div>

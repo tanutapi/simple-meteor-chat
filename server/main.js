@@ -5,6 +5,20 @@ import { Messages, Assets, Status } from '../imports/collections';
 import moment from 'moment';
 
 const PURGE_INTERVAL_MS = 60 * 1000;
+const BROADCAST_INTERVAL_MS = 10 * 1000;
+
+const BROADCAST_SENTENCES = [
+  'Welcome to Simple Meteor Chat!',
+  'Messages vanish every minute — enjoy the moment.',
+  'Be kind to each other out there.',
+  'Did you know? This app runs on Meteor 3.',
+  'Say something nice before the board resets.',
+  'Reactivity is magic, but this message is scheduled.',
+  'Tick tock — the purge timer is always running.',
+  'A fresh start is never more than a minute away.',
+  'Hello from the server side!',
+  'Stay hydrated and keep chatting.',
+];
 
 Meteor.publish('messages', function() {
   if (this.userId) {
@@ -192,4 +206,15 @@ Meteor.startup(async () => {
       $set: {nextPurgeAt: new Date(Date.now() + PURGE_INTERVAL_MS)},
     });
   }, PURGE_INTERVAL_MS);
+
+  // Broadcast a system message every 10 seconds.
+  Meteor.setInterval(async () => {
+    const sentence = BROADCAST_SENTENCES[Math.floor(Math.random() * BROADCAST_SENTENCES.length)];
+    await Messages.insertAsync({
+      from: null,
+      system: true,
+      msg: sentence,
+      createdAt: new Date(),
+    });
+  }, BROADCAST_INTERVAL_MS);
 });
